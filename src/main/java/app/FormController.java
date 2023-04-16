@@ -13,6 +13,11 @@ import javafx.scene.image.ImageView;
 import javafx.scene.layout.AnchorPane;
 import javafx.scene.text.Font;
 import javafx.stage.Stage;
+import repository.UsuariosRepository;
+
+import java.sql.Connection;
+import java.sql.DriverManager;
+import java.sql.SQLException;
 
 public class FormController {
 
@@ -30,7 +35,17 @@ public class FormController {
     @FXML
     private Hyperlink hyperlinkCrearCuenta;
 
-    public void initialize() {
+    private static final String DB_URL = "jdbc:mysql://localhost:3306/teamder";
+    private static final String DB_USER = "root";
+    private static final String DB_PASSWORD = "";
+    private UsuariosRepository usuariosRepository;
+    private Connection connection;
+
+    public void initialize() throws SQLException {
+        //Creamos la conexion a la BBDD y creamos el Repositorio de Usuarios
+        connection = DriverManager.getConnection(DB_URL, DB_USER, DB_PASSWORD);
+        usuariosRepository = new UsuariosRepository(connection);
+
         //insertamos el logo del login
         Image logoFormulario = new Image("file:src/main/resources/logo/logo_sin_fondo.png");
         imageViewLogo.setImage(logoFormulario);
@@ -95,6 +110,8 @@ public class FormController {
 
         //TODO validar usuario
         //Si es correcto cambiar scene
+
+
         iniciarSesion(); //TODO llamar unicamente si la validacion es correcta
 
 

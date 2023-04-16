@@ -3,6 +3,8 @@ module login.formlogin {
     requires javafx.fxml;
 
     requires org.kordamp.bootstrapfx.core;
+    requires java.persistence;
+    requires java.sql;
 
 
     opens app to javafx.fxml;

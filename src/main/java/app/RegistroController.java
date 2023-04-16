@@ -1,33 +1,57 @@
 package app;
 
 
+import javafx.animation.KeyFrame;
+import javafx.animation.Timeline;
 import javafx.application.Platform;
+import javafx.event.ActionEvent;
+import javafx.event.EventHandler;
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
 import javafx.scene.Scene;
 import javafx.scene.control.Button;
 import javafx.scene.control.Hyperlink;
+import javafx.scene.control.Label;
+import javafx.scene.control.TextField;
 import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
 import javafx.scene.layout.*;
 import javafx.stage.Stage;
+import javafx.util.Duration;
+import model.Usuario;
+import repository.UsuariosRepository;
 
 import java.io.IOException;
+import java.sql.Connection;
+import java.sql.DriverManager;
+import java.sql.SQLException;
+import java.sql.SQLTimeoutException;
 
 public class RegistroController {
 
-    @FXML
-    private Hyperlink hyperlinkIniciarSesion;
-    @FXML
-    private Button buttonVolver;
-    @FXML
-    private ImageView imageViewLeftPane;
+    @FXML private Hyperlink hyperlinkIniciarSesion;
+    @FXML private Button buttonVolver;
+    @FXML private ImageView imageViewLeftPane;
+    @FXML private Button buttonRegistro;
+    @FXML private TextField usernameField;
+    @FXML private TextField correoField;
+    @FXML private TextField passwordField;
+    @FXML private TextField confirmPasswordField;
+    @FXML private Pane errorPane;
+    @FXML private Label errorMessage;
 
-    @FXML
-    private Button buttonRegistro;
+    private static final String DB_URL = "jdbc:mysql://localhost:3306/teamder";
+    private static final String DB_USER = "root";
+    private static final String DB_PASSWORD = "";
+    private UsuariosRepository usuariosRepository;
+    private Connection connection;
 
 
-    public void initialize() {
+    public void initialize() throws SQLException {
+        //Creamos la conexion a la BBDD y creamos el Repositorio de Usuarios
+        connection = DriverManager.getConnection(DB_URL, DB_USER, DB_PASSWORD);
+        usuariosRepository = new UsuariosRepository(connection);
+
         //insertamos el fondo del left pane
         Image imagenFondo = new Image("file:src/main/resources/backgrounds/fondo_left_pane.png");
         imageViewLeftPane.setImage(imagenFondo);
@@ -50,7 +74,13 @@ public class RegistroController {
 
         //Evento de boton Registrate
         buttonRegistro.setOnAction(actionEvent ->
-                handleRegister()
+                {
+                    try {
+                        handleRegister();
+                    } catch (SQLException e) {
+                        throw new RuntimeException(e);
+                    }
+                }
         );
 
     }
@@ -73,6 +103,71 @@ public class RegistroController {
 
     //Metodo que manejara los datos del registro, comprueba en la base de datos por coincidencias.
     //Y almacenara el usuario nuevo.
-    private void handleRegister() {
+    private void handleRegister() throws SQLException {
+
+        Usuario nuevoUsuario = new Usuario();
+
+        // Comprobar nombre de usuario único
+        String nombreUsuario = usernameField.getText();
+        if (usuariosRepository.isNombreUsuarioExists(nombreUsuario)) {
+            // El nombre de usuario ya existe, muestra un mensaje de error o lanza una excepción
+            // TODO: Mostrar mensaje de error o lanzar excepción
+            mostrarMensajeError("El nombre de usuario ya existe.");
+            return;
+        }
+        nuevoUsuario.setNombreUsuario(nombreUsuario);
+
+        // Comprobar correo electrónico único
+        String correo = correoField.getText();
+        if (usuariosRepository.isCorreoExists(correo)) {
+            // El correo electrónico ya existe, muestra un mensaje de error o lanza una excepción
+            // TODO: Mostrar mensaje de error o lanzar excepción
+            mostrarMensajeError("El correo electronico ya existe");
+            return;
+        }
+        nuevoUsuario.setCorreo(correo);
+
+        String pass1 = passwordField.getText();
+        String pass2 = confirmPasswordField.getText();
+        if(pass1.equals(pass2)){
+            nuevoUsuario.setContraseña(passwordField.getText());
+        } else {
+            mostrarMensajeError("Las contraseñas no coinciden");
+            return;
+        }
+
+
+
+        //Guardamos el nuevo usuario
+        usuariosRepository.save(nuevoUsuario);
+
+        //Volver al login
+
     }
+
+    // Método para mostrar el mensaje de error en el Pane
+    private void mostrarMensajeError(String mensaje) {
+        // Configura el mensaje de error en el Label
+        errorMessage.setText(mensaje);
+        // Hace visible el Pane de error
+        errorPane.setVisible(true);
+
+        // Crea una Timeline para ocultar el mensaje de error después de 3 segundos
+        Timeline timeline = new Timeline();
+        KeyFrame keyFrame = new KeyFrame(Duration.seconds(3), new EventHandler<ActionEvent>() {
+            @Override
+            public void handle(ActionEvent event) {
+                // Oculta el mensaje de error
+                ocultarMensajeError();
+            }
+        });
+        timeline.getKeyFrames().add(keyFrame);
+        timeline.play();
+    }
+
+    private void ocultarMensajeError() {
+        errorPane.setVisible(false);
+    }
+
+
 }
