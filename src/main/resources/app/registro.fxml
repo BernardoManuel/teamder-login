@@ -24,22 +24,22 @@
                         <Font size="41.0" />
                      </font>
                   </Label>
-                  <TextField fx:id="usernameField" layoutX="120.0" layoutY="200.0" promptText="Usuario" style="-fx-background-color: transparent; -fx-border-color: #f8efad; -fx-border-width: 0px 0px 1px 0px;">
+                  <TextField fx:id="usernameField" layoutX="120.0" layoutY="200.0" promptText="Usuario" style="-fx-background-color: transparent; -fx-border-color: #f8efad; -fx-border-width: 0px 0px 1px 0px; -fx-text-fill: white;">
                      <font>
                         <Font size="13.0" />
                      </font>
                   </TextField>
-                  <TextField fx:id="correoField" layoutX="120.0" layoutY="250.0" promptText="Correo" style="-fx-background-color: transparent; -fx-border-color: #f8efad; -fx-border-width: 0px 0px 1px 0px;">
+                  <TextField fx:id="correoField" layoutX="120.0" layoutY="250.0" promptText="Correo" style="-fx-background-color: transparent; -fx-border-color: #f8efad; -fx-border-width: 0px 0px 1px 0px; -fx-text-fill: white;">
                      <font>
                         <Font size="13.0" />
                      </font>
                   </TextField>
-                  <PasswordField fx:id="passwordField" layoutX="120.0" layoutY="300.0" promptText="Contraseña" style="-fx-background-color: transparent; -fx-border-color: #f8efad; -fx-border-width: 0px 0px 1px 0px;">
+                  <PasswordField fx:id="passwordField" layoutX="120.0" layoutY="300.0" promptText="Contraseña" style="-fx-background-color: transparent; -fx-border-color: #f8efad; -fx-border-width: 0px 0px 1px 0px; -fx-text-fill: white;">
                      <font>
                         <Font size="13.0" />
                      </font>
                   </PasswordField>
-                  <PasswordField fx:id="confirmPasswordField" layoutX="120.0" layoutY="350.0" promptText="Repetir contraseña" style="-fx-background-color: transparent; -fx-border-color: #f8efad; -fx-border-width: 0px 0px 1px 0px;">
+                  <PasswordField fx:id="confirmPasswordField" layoutX="120.0" layoutY="350.0" promptText="Repetir contraseña" style="-fx-background-color: transparent; -fx-border-color: #f8efad; -fx-border-width: 0px 0px 1px 0px; -fx-text-fill: white;">
                      <font>
                         <Font size="13.0" />
                      </font>
@@ -55,9 +55,9 @@
                         <Font name="System Bold" size="12.0" />
                      </font>
                   </Button>
-                  <Pane fx:id="errorPane" layoutX="86.0" layoutY="397.0" prefHeight="31.0" prefWidth="230.0" style="-fx-background-color: rgba(255, 0, 0, 0.8); -fx-background-radius: 5; -fx-border-radius: 5; " visible="false  ">
+                  <Pane fx:id="errorPane" layoutX="84.0" layoutY="395.0" prefHeight="31.0" prefWidth="230.0" style="-fx-background-color: rgba(255, 0, 0, 0.8); -fx-background-radius: 5; -fx-border-radius: 5; " visible="false">
                      <children>
-                        <Label fx:id="errorMessage" alignment="CENTER" layoutX="32.0" layoutY="6.0" text="MENSAJE ERROR DEFAULT" textAlignment="CENTER" textFill="WHITE">
+                        <Label fx:id="errorMessage" alignment="CENTER" layoutX="2.0" layoutY="6.0" prefHeight="20.0" prefWidth="227.0" text="MENSAJE ERROR DEFAULT" textAlignment="CENTER" textFill="WHITE">
                            <font>
                               <Font size="14.0" />
                            </font>

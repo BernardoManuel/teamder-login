@@ -27,6 +27,7 @@ public class UsuariosRepository {
                 usuario.setId(resultSet.getInt("cod_user"));
                 usuario.setNombreUsuario(resultSet.getString("nom_user"));
                 usuario.setContraseña(resultSet.getString("contraseña"));
+                usuario.setSalt(resultSet.getString("salt"));
                 usuario.setCorreo(resultSet.getString("correo"));
                 usuario.setDescripcion(resultSet.getString("descripcion"));
                 // Agrega más atributos de la entidad Usuario según tu base de datos
@@ -37,12 +38,13 @@ public class UsuariosRepository {
     }
 
     public void save(Usuario usuario) throws SQLException {
-        String query = "INSERT INTO usuarios (nom_user, contraseña, correo, descripcion) VALUES (?, ?, ?, ?)";
+        String query = "INSERT INTO usuarios (nom_user, contraseña, salt, correo, descripcion) VALUES (?, ?, ?, ?, ?)";
         try (PreparedStatement statement = connection.prepareStatement(query)) {
             statement.setString(1, usuario.getNombreUsuario());
             statement.setString(2, usuario.getContraseña());
-            statement.setString(3, usuario.getCorreo());
-            statement.setString(4, usuario.getDescripcion());
+            statement.setString(3, usuario.getSalt());
+            statement.setString(4, usuario.getCorreo());
+            statement.setString(5, usuario.getDescripcion());
             // Configura más parámetros del statement según tu base de datos y entidad Usuario
             statement.executeUpdate();
         }
@@ -75,5 +77,26 @@ public class UsuariosRepository {
         }
         return false;
     }
+
+    public Usuario findUsuarioByNombreUsuario(String nombreUsuario) throws SQLException {
+        String query = "SELECT * FROM usuarios WHERE nom_user = ?";
+        Usuario usuario = null;
+        try (PreparedStatement statement = connection.prepareStatement(query)) {
+            statement.setString(1, nombreUsuario);
+            try (ResultSet resultSet = statement.executeQuery()) {
+                if (resultSet.next()) {
+                    usuario = new Usuario();
+                    usuario.setId(resultSet.getInt("cod_user"));
+                    usuario.setNombreUsuario(resultSet.getString("nom_user"));
+                    usuario.setContraseña(resultSet.getString("contraseña"));
+                    usuario.setSalt(resultSet.getString("salt"));
+                    usuario.setCorreo(resultSet.getString("correo"));
+                    usuario.setDescripcion(resultSet.getString("descripcion"));
+                }
+            }
+        }
+        return usuario;
+    }
+
 
 }

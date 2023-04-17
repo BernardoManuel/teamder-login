@@ -1,39 +1,41 @@
 package app;
 
+import javafx.animation.KeyFrame;
+import javafx.animation.Timeline;
 import javafx.application.Platform;
+import javafx.event.ActionEvent;
+import javafx.event.EventHandler;
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
 import javafx.scene.Scene;
-import javafx.scene.control.Button;
-import javafx.scene.control.Hyperlink;
-import javafx.scene.control.PasswordField;
-import javafx.scene.control.TextField;
+import javafx.scene.control.*;
 import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
 import javafx.scene.layout.AnchorPane;
+import javafx.scene.layout.Pane;
 import javafx.scene.text.Font;
 import javafx.stage.Stage;
+import javafx.util.Duration;
+import model.Usuario;
 import repository.UsuariosRepository;
+import utils.PasswordUtil;
 
+import java.security.MessageDigest;
+import java.security.NoSuchAlgorithmException;
 import java.sql.Connection;
 import java.sql.DriverManager;
 import java.sql.SQLException;
 
 public class FormController {
 
-    @FXML
-    private ImageView imageViewLogo;
-    @FXML
-    private TextField usernameField;
-    @FXML
-    private PasswordField passwordField;
-    @FXML
-    private ImageView imageViewLeftPane;
-    @FXML
-    private Button buttonLogin;
-
-    @FXML
-    private Hyperlink hyperlinkCrearCuenta;
+    @FXML private ImageView imageViewLogo;
+    @FXML private TextField usernameField;
+    @FXML private PasswordField passwordField;
+    @FXML private ImageView imageViewLeftPane;
+    @FXML private Button buttonLogin;
+    @FXML private Hyperlink hyperlinkCrearCuenta;
+    @FXML private Pane errorPane;
+    @FXML private Label errorMessage;
 
     private static final String DB_URL = "jdbc:mysql://localhost:3306/teamder";
     private static final String DB_USER = "root";
@@ -59,7 +61,15 @@ public class FormController {
 
 
         buttonLogin.setOnAction(actionEvent ->
-                handleLogin()
+                {
+                    try {
+                        handleLogin();
+                    } catch (SQLException e) {
+                        throw new RuntimeException(e);
+                    } catch (NoSuchAlgorithmException e) {
+                        throw new RuntimeException(e);
+                    }
+                }
         );
 
         hyperlinkCrearCuenta.setOnMouseClicked(mouseEvent ->
@@ -104,16 +114,65 @@ public class FormController {
     }
 
     @FXML
-    private void handleLogin() {
+    private void handleLogin() throws SQLException, NoSuchAlgorithmException {
         String username = usernameField.getText();
         String password = passwordField.getText();
 
-        //TODO validar usuario
-        //Si es correcto cambiar scene
+        // Validar usuario
+        Usuario usuario = usuariosRepository.findUsuarioByNombreUsuario(username);
 
+        if(usuario!=null) {
+            // Obtener el salt del usuario encontrado
+            String saltStr = usuario.getSalt();
+            // Convertir el salt de hexadecimal a bytes
+            byte[] saltBytes = PasswordUtil.hexToBytes(saltStr);
+            // Generar el hash de la contraseña ingresada + salt obtenido de la BBDD
+            byte[] bytePassword = PasswordUtil.getHashedPassword(password, saltBytes);
+            // Obtener el HEX a partir del arreglo de bytes generado
+            String passwordGenerada = PasswordUtil.bytesToHex(bytePassword);
 
-        iniciarSesion(); //TODO llamar unicamente si la validacion es correcta
+            // Obtener la contraseña almacenada en la BBDD
+            String passwordBbdd = usuario.getContraseña();
 
+            // Comparar las contraseñas de manera segura
+            boolean passwordsIguales = MessageDigest.isEqual(passwordGenerada.getBytes(), passwordBbdd.getBytes());
 
+            if (passwordsIguales) {
+                // Si es correcto cambiar scene
+                iniciarSesion();
+            } else {
+                //Lanzar error de inicio de sesión.
+                mostrarMensajeError("Usuario o contraseña no coinciden");
+                return;
+            }
+        } else {
+            //Lanzar error de inicio de sesión.
+            mostrarMensajeError("Usuario o contraseña no coinciden");
+            return;
+        }
+    }
+
+    // Método para mostrar el mensaje de error en el Pane
+    private void mostrarMensajeError(String mensaje) {
+        // Configura el mensaje de error en el Label
+        errorMessage.setText(mensaje);
+        // Hace visible el Pane de error
+        errorPane.setVisible(true);
+
+        // Crea una Timeline para ocultar el mensaje de error después de 3 segundos
+        Timeline timeline = new Timeline();
+        KeyFrame keyFrame = new KeyFrame(Duration.seconds(3), new EventHandler<ActionEvent>() {
+            @Override
+            public void handle(ActionEvent event) {
+                // Oculta el mensaje de error
+                ocultarMensajeError();
+            }
+        });
+        timeline.getKeyFrames().add(keyFrame);
+        timeline.play();
+    }
+
+    private void ocultarMensajeError() {
+        errorPane.setVisible(false);
     }
 }

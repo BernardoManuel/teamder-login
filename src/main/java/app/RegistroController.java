@@ -20,8 +20,10 @@ import javafx.stage.Stage;
 import javafx.util.Duration;
 import model.Usuario;
 import repository.UsuariosRepository;
+import utils.PasswordUtil;
 
 import java.io.IOException;
+import java.security.NoSuchAlgorithmException;
 import java.sql.Connection;
 import java.sql.DriverManager;
 import java.sql.SQLException;
@@ -79,6 +81,8 @@ public class RegistroController {
                         handleRegister();
                     } catch (SQLException e) {
                         throw new RuntimeException(e);
+                    } catch (NoSuchAlgorithmException e) {
+                        throw new RuntimeException(e);
                     }
                 }
         );
@@ -103,7 +107,7 @@ public class RegistroController {
 
     //Metodo que manejara los datos del registro, comprueba en la base de datos por coincidencias.
     //Y almacenara el usuario nuevo.
-    private void handleRegister() throws SQLException {
+    private void handleRegister() throws SQLException, NoSuchAlgorithmException {
 
         Usuario nuevoUsuario = new Usuario();
 
@@ -125,24 +129,33 @@ public class RegistroController {
             mostrarMensajeError("El correo electronico ya existe");
             return;
         }
+        //Set correo electronico
         nuevoUsuario.setCorreo(correo);
 
+        //Comprobar contraseñas concuerdan
         String pass1 = passwordField.getText();
         String pass2 = confirmPasswordField.getText();
+
         if(pass1.equals(pass2)){
-            nuevoUsuario.setContraseña(passwordField.getText());
+            String password = passwordField.getText();
+            byte[] salt = PasswordUtil.generateSalt();
+            byte[] hashedPassword = PasswordUtil.getHashedPassword(password, salt);
+            String hashStr = PasswordUtil.bytesToHex(hashedPassword); // Convertir a representación hexadecimal
+            String saltStr = PasswordUtil.bytesToHex(salt);
+
+            // Guardar hashStr y salt en la base de datos para el nuevo usuario
+            nuevoUsuario.setContraseña(hashStr);
+            nuevoUsuario.setSalt(saltStr);
         } else {
             mostrarMensajeError("Las contraseñas no coinciden");
             return;
         }
 
-
-
         //Guardamos el nuevo usuario
         usuariosRepository.save(nuevoUsuario);
 
         //Volver al login
-
+        formIniciarSesion();
     }
 
     // Método para mostrar el mensaje de error en el Pane
