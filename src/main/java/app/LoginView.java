@@ -5,11 +5,7 @@ import javafx.fxml.FXMLLoader;
 import javafx.scene.Scene;
 import javafx.scene.layout.AnchorPane;
 import javafx.stage.Stage;
-import repository.UsuariosRepository;
 
-import java.sql.Connection;
-import java.sql.DriverManager;
-import java.sql.SQLException;
 
 public class LoginView extends Application {
 
@@ -23,7 +19,7 @@ public class LoginView extends Application {
             AnchorPane form = formLoader.load();
             Scene formScene = new Scene(form);
             primaryStage.setScene(formScene);
-            primaryStage.setResizable(false); //para que la ventana no sea redimensionable.
+            primaryStage.setResizable(true); //para que la ventana no sea redimensionable.
 
             primaryStage.show();
 

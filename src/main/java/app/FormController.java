@@ -18,6 +18,7 @@ import javafx.stage.Stage;
 import javafx.util.Duration;
 import model.Usuario;
 import repository.UsuariosRepository;
+import utils.ConnectionUtil;
 import utils.PasswordUtil;
 
 import java.security.MessageDigest;
@@ -44,8 +45,8 @@ public class FormController {
     private Connection connection;
 
     public void initialize() throws SQLException {
-        //Creamos la conexion a la BBDD y creamos el Repositorio de Usuarios
-        connection = DriverManager.getConnection(DB_URL, DB_USER, DB_PASSWORD);
+        //Utilizamos el util de conexion para crear una conexion a nuestra BBDD
+        connection = ConnectionUtil.getConnection();
         usuariosRepository = new UsuariosRepository(connection);
 
         //insertamos el logo del login
@@ -99,14 +100,23 @@ public class FormController {
      */
     private void iniciarSesion() {
         try {
-            //Cargamos la vista home
-            FXMLLoader formLoader = new FXMLLoader(getClass().getResource("home.fxml"));
-            AnchorPane home = formLoader.load();
-            Scene homeScene = new Scene(home);
-            //Recuperamos y mostramos la vista home
+//            //Cargamos la vista home
+//            FXMLLoader formLoader = new FXMLLoader(getClass().getResource("homePage.fxml"));
+//            AnchorPane home = formLoader.load();
+//            Scene homeScene = new Scene(home);
+//            //Recuperamos y mostramos la vista home
+//            Stage stage = (Stage) buttonLogin.getScene().getWindow();
+//            stage.setResizable(true);//Permitimos la redimension de la ventana
+//            stage.setScene(homeScene);
+
+
+            FXMLLoader fxmlLoader = new FXMLLoader(getClass().getResource("homePage.fxml"));
+            Scene scene = new Scene(fxmlLoader.load(), 905, 621);
             Stage stage = (Stage) buttonLogin.getScene().getWindow();
-            stage.setResizable(true);//Permitimos la redimension de la ventana
-            stage.setScene(homeScene);
+            stage.setScene(scene);
+            stage.setResizable(true);
+
+            stage.show();
 
         } catch (Exception e) {
             e.printStackTrace();

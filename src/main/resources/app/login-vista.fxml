@@ -36,7 +36,7 @@
                   <Hyperlink fx:id="hyperlinkCrearCuenta" layoutX="217.0" layoutY="513.0" text="Crea una cuenta." />
                   <Label layoutX="93.0" layoutY="516.0" text="¿No tienes una cuenta?" textFill="WHITE" />
                   <ImageView fx:id="imageViewLogo" fitHeight="211.0" fitWidth="233.0" layoutX="85.0" layoutY="37.0" nodeOrientation="INHERIT" pickOnBounds="true" preserveRatio="true" />
-                  <Pane fx:id="errorPane" layoutX="84.0" layoutY="395.0" prefHeight="31.0" prefWidth="230.0" style="-fx-background-color: rgba(255, 0, 0, 0.8); -fx-background-radius: 5; -fx-border-radius: 5; " visible="false">
+                  <Pane fx:id="errorPane" layoutX="84.0" layoutY="395.0" prefHeight="31.0" prefWidth="230.0" style="-fx-background-color: rgba(255, 0, 0, 0.6); -fx-background-radius: 5; -fx-border-radius: 5; " visible="false">
                      <children>
                         <Label fx:id="errorMessage" alignment="CENTER" layoutX="2.0" layoutY="6.0" prefHeight="20.0" prefWidth="227.0" text="MENSAJE ERROR DEFAULT" textAlignment="CENTER" textFill="WHITE">
                            <font>

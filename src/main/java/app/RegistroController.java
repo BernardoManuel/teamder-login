@@ -20,6 +20,7 @@ import javafx.stage.Stage;
 import javafx.util.Duration;
 import model.Usuario;
 import repository.UsuariosRepository;
+import utils.ConnectionUtil;
 import utils.PasswordUtil;
 
 import java.io.IOException;
@@ -41,17 +42,13 @@ public class RegistroController {
     @FXML private TextField confirmPasswordField;
     @FXML private Pane errorPane;
     @FXML private Label errorMessage;
-
-    private static final String DB_URL = "jdbc:mysql://localhost:3306/teamder";
-    private static final String DB_USER = "root";
-    private static final String DB_PASSWORD = "";
     private UsuariosRepository usuariosRepository;
     private Connection connection;
 
 
     public void initialize() throws SQLException {
         //Creamos la conexion a la BBDD y creamos el Repositorio de Usuarios
-        connection = DriverManager.getConnection(DB_URL, DB_USER, DB_PASSWORD);
+        connection = ConnectionUtil.getConnection();
         usuariosRepository = new UsuariosRepository(connection);
 
         //insertamos el fondo del left pane
@@ -141,7 +138,7 @@ public class RegistroController {
             byte[] salt = PasswordUtil.generateSalt();
             byte[] hashedPassword = PasswordUtil.getHashedPassword(password, salt);
             String hashStr = PasswordUtil.bytesToHex(hashedPassword); // Convertir a representación hexadecimal
-            String saltStr = PasswordUtil.bytesToHex(salt);
+            String saltStr = PasswordUtil.bytesToHex(salt); // Convertir a representación hexadecimal
 
             // Guardar hashStr y salt en la base de datos para el nuevo usuario
             nuevoUsuario.setContraseña(hashStr);
@@ -151,11 +148,18 @@ public class RegistroController {
             return;
         }
 
-        //Guardamos el nuevo usuario
-        usuariosRepository.save(nuevoUsuario);
+        //Validar campos vacios
+        if(nombreUsuario.isEmpty()||correo.isEmpty()||pass1.isEmpty()||pass2.isEmpty()){
+            mostrarMensajeError("Debe rellenar todos los campos");
+            return;
+        }else{
+            //Guardamos el nuevo usuario
+            usuariosRepository.save(nuevoUsuario);
 
-        //Volver al login
-        formIniciarSesion();
+            //Volver al login
+            formIniciarSesion();
+        }
+
     }
 
     // Método para mostrar el mensaje de error en el Pane

@@ -1,4 +1,5 @@
 package utils;
+
 import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
 import java.security.SecureRandom;
@@ -8,15 +9,18 @@ public class PasswordUtil {
     // Función para generar un salt aleatorio
     public static byte[] generateSalt() {
         byte[] salt = new byte[16]; // Se recomienda un tamaño de salt de al menos 16 bytes
-        SecureRandom random = new SecureRandom();
+        SecureRandom random = new SecureRandom(); //Clase que genera números aleatorios seguros, que son útiles para operaciones criptográficas como generación de claves y vectores de inicialización.
         random.nextBytes(salt);
         return salt;
     }
 
     // Función para obtener el hash de una contraseña usando SHA-256 y un salt
     public static byte[] getHashedPassword(String password, byte[] salt) throws NoSuchAlgorithmException {
+        //Clase calcular resúmenes criptográficos (hash) de datos, como MD5 o SHA-256.
         MessageDigest md = MessageDigest.getInstance("SHA-256");
+        //para agregar la sal al proceso de hash
         md.update(salt);
+        //calcula el hash de la combinación de la sal y la contraseña
         byte[] hashedPassword = md.digest(password.getBytes());
         return hashedPassword;
     }
