@@ -37,9 +37,9 @@ public class FormController {
     @FXML private Pane errorPane;
     @FXML private Label errorMessage;
 
-    private static final String DB_URL = "jdbc:mariadb://localhost:3306/teamder";
+    private static final String DB_URL = "jdbc:mysql://localhost:3306/teamder";
     private static final String DB_USER = "root";
-    private static final String DB_PASSWORD = "root";
+    private static final String DB_PASSWORD = "";
     private UsuariosRepository usuariosRepository;
     private Connection connection;
 
